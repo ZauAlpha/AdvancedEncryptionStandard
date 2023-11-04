@@ -72,17 +72,42 @@ public class Byte {
         PolynomialFunction multiplicand = multiplying.getPolynomial();
         PolynomialFunction multiplierPolynomial = multiplier.getPolynomial();
         PolynomialFunction product = multiplicand.multiply(multiplierPolynomial);
-        if (product.degree() == 8) {
-            product = product.subtract(new PolynomialFunction(new double[]{0, 0, 0, 0, 0, 0, 0,0, 1}));
-            product = product.add(AES.irreduciblePolynomial);
-        }
         double[] bits = product.getCoefficients();
         for (int i = 0; i < bits.length; i++) {
-                bits[i] = bits[i]%2;
+            bits[i] = bits[i]%2;
+
+        }
+        product = new PolynomialFunction(bits);
+        if (product.degree() >= 8) {
+            product = simplify(product);
+        }
+         bits = product.getCoefficients();
+        for (int i = 0; i < bits.length; i++) {
+            bits[i] = bits[i]%2;
 
         }
         Byte bait= new Byte(bits);
         return new Byte(bits);
+    }
+    private static PolynomialFunction simplify(PolynomialFunction polynomial){
+        double[] coefficients=polynomial.getCoefficients();
+        PolynomialFunction temp = AES.irreduciblePolynomial;
+        for(int i = 0 ; i < polynomial.degree()-7;i++){
+            if(coefficients[i+8]==0){
+                temp=temp.multiply(new PolynomialFunction(new double[]{0,1}));
+                continue;
+            }
+            coefficients[i+8]=0;
+            PolynomialFunction aux = new PolynomialFunction(coefficients);
+            aux=aux.add(temp);
+            coefficients=aux.getCoefficients();
+            temp=temp.multiply(new PolynomialFunction(new double[]{0,1}));
+        }
+        for (int i = 0; i < coefficients.length; i++) {
+            coefficients[i] = coefficients[i]%2;
+
+        }
+        return new PolynomialFunction(coefficients);
     }
     public String getHexadecimal(){
         return(intToHex(getDecimal()));

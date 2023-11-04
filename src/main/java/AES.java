@@ -43,6 +43,15 @@ public class AES {
                     {new Byte(1), new Byte(2), new Byte(3), new Byte(1)},
                     {new Byte(1), new Byte(1), new Byte(2), new Byte(3)},
                     {new Byte(3), new Byte(1), new Byte(1), new Byte(2)}};
+    private static Byte[][] inverseMixColumnMatrix =
+            {{new Byte(0x0e), new Byte(0x0b), new Byte(0x0d), new Byte(0x09)},
+                    {new Byte(0x09), new Byte(0x0e), new Byte(0x0b), new Byte(0x0d)},
+                    {new Byte(0x0d), new Byte(0x09), new Byte(0x0e), new Byte(0x0b)},
+                    {new Byte(0x0b), new Byte(0x0d), new Byte(0x09), new Byte(0x0e)}};
+    private static Byte[][] key = {{new Byte(0x2b), new Byte(0x28), new Byte(0xab), new Byte(0x09)},
+            {new Byte(0x7e), new Byte(0xae), new Byte(0xf7), new Byte(0xcf)},
+            {new Byte(0x15), new Byte(0xd2), new Byte(0x15), new Byte(0x4f)},
+            {new Byte(0x16), new Byte(0xa6), new Byte(0x88), new Byte(0x3c)}};
 
     public Byte byteSubstitution(Byte number) {
         boolean[] left = new boolean[4];
@@ -82,13 +91,40 @@ public class AES {
         Byte[][] result = new Byte[4][4];
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
+                Byte aux[] = new Byte[4];
                 for (int k = 0; k < 4; k++) {
                     Byte num = Byte.AESmultiplyBytes(bytes[k][j], mixColumnMatrix[i][k]);
-                    if (result[i][j] == null)
-                        result[i][j] = num;
-                    else
-                        result[i][j] = result[i][j].XOR(num);
+                    aux[k] = num;
                 }
+                result[i][j] = aux[0].XOR(aux[1]).XOR(aux[2]).XOR(aux[3]);
+            }
+        }
+        return new Block(result);
+    }
+
+    public Block inverseMixColumn(Block block) {
+        Byte[][] bytes = block.getBytesMatrix();
+        Byte[][] result = new Byte[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                Byte aux[] = new Byte[4];
+                for (int k = 0; k < 4; k++) {
+                    Byte num = Byte.AESmultiplyBytes(bytes[k][j], inverseMixColumnMatrix[i][k]);
+                    aux[k] = num;
+                }
+                result[i][j] = aux[0].XOR(aux[1]).XOR(aux[2]).XOR(aux[3]);
+            }
+        }
+        return new Block(result);
+    }
+
+    //a method that implements the add round key step
+    public Block addRoundKey(Block block) {
+        Byte[][] bytes = block.getBytesMatrix();
+        Byte[][] result = new Byte[4][4];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; i++) {
+                result[i][j] = bytes[i][j].XOR(key[i][j]);
             }
         }
         return new Block(result);

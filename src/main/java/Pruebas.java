@@ -33,6 +33,9 @@ public class Pruebas {
             }
             System.out.println();
         }
+        Block inverseMixColumn = aes.inverseMixColumn(mixColumn);
+        System.out.println("Inverse Mix Column");
+        System.out.println(inverseMixColumn);
 
     }
 }

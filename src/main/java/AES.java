@@ -72,12 +72,38 @@ public class AES {
         }
         return new Byte(SBox[rightNum][leftNum]);
     }
+    public Byte inversedByteSubstitution(Byte number) {
+        boolean[] left = new boolean[4];
+        boolean[] right = new boolean[4];
+        for (int i = 0; i < 4; i++) {
+            left[i] = number.binary[i];
+            right[i] = number.binary[i + 4];
+        }
+        int leftNum = 0;
+        int rightNum = 0;
+        for (int i = 0; i < 4; i++) {
+            if (left[i]) {
+                leftNum += Math.pow(2, i);
+            }
+            if (right[i]) {
+                rightNum += Math.pow(2, i);
+            }
+        }
+        return new Byte(inverseSBox[rightNum][leftNum]);
+    }
 
     //a method that recibes a block and returns a block with the bytes substituted
     public Block blockSubstitution(Block block) {
         Byte[] bytes = block.getBytes();
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = byteSubstitution(bytes[i]);
+        }
+        return new Block(bytes);
+    }
+    public Block inverseBlockSubstitution(Block block) {
+        Byte[] bytes = block.getBytes();
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = inversedByteSubstitution(bytes[i]);
         }
         return new Block(bytes);
     }
@@ -123,11 +149,37 @@ public class AES {
         Byte[][] bytes = block.getBytesMatrix();
         Byte[][] result = new Byte[4][4];
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 result[i][j] = bytes[i][j].XOR(key[i][j]);
             }
         }
         return new Block(result);
+    }
+    public Block Round(Block block){
+        Block substitution=blockSubstitution(block);
+        Block shift=substitution.shiftRow();
+        Block mix=mixColumn(shift);
+        Block round=addRoundKey(mix);
+        return round;
+    }
+    public Block InversedRound(Block block){
+        Block round=addRoundKey(block);
+        Block inverseMix=inverseMixColumn(round);
+        Block inverseShift=inverseMix.inverseShiftRow();
+        Block inverseSubstitution=inverseBlockSubstitution(inverseShift);
+        return inverseSubstitution;
+    }
+    public Block encrypt(Block block){
+        for (int i = 0; i < 10; i++) {
+            block=Round(block);
+        }
+        return block;
+    }
+    public Block decrypt(Block block){
+        for (int i = 0; i < 10; i++) {
+            block=InversedRound(block);
+        }
+        return block;
     }
 }
 

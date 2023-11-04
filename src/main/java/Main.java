@@ -4,7 +4,7 @@ public class Main {
         Byte[] bytes = Util.getInstance().txtToAscii(Util.path);
 
         Block[] blocks = Block.getBlocks(bytes);
-        prueba(blocks);
+        prueba3(blocks);
 
 
 
@@ -22,6 +22,32 @@ public class Main {
         System.out.println(shift);
         Block mix = aes.mixColumn(shift);
         System.out.println(mix);
+
+    }
+    public static void prueba2(Block[] blocks){
+        Block first = blocks[0];
+        AES aes = new AES();
+        System.out.println("Normal");
+        System.out.println(first);
+        Block firstRound= aes.Round(first);
+        System.out.println("First Round");
+        System.out.println(firstRound);
+        Block original= aes.InversedRound(firstRound);
+        System.out.println("Original");
+        System.out.println(original);
+
+    }
+    public static void prueba3(Block[] blocks){
+        Block first = blocks[0];
+        AES aes = new AES();
+        System.out.println("Normal");
+        System.out.println(first);
+        Block encryption = aes.encrypt(first);
+        System.out.println("Encryption");
+        System.out.println(encryption);
+        Block decryption = aes.decrypt(encryption);
+        System.out.println("Decryption");
+        System.out.println(decryption);
 
     }
 

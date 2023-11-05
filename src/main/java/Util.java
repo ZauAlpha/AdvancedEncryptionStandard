@@ -58,4 +58,13 @@ public class Util {
 
         return asciiText;
     }
+    public Byte[] plaintextToAscii(String text) {
+        char[] chars = text.toCharArray();
+        Byte[] asciiText = new Byte[chars.length];
+        for (int i = 0; i < chars.length; i++) {
+            asciiText[i] = new Byte((int) chars[i]);
+        }
+
+        return asciiText;
+    }
 }

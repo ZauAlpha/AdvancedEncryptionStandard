@@ -2,10 +2,14 @@ public class Main {
 
     public static void main(String[] args) {
         Byte[] bytes = Util.getInstance().txtToAscii(Util.path);
-
         Block[] blocks = Block.getBlocks(bytes);
-        prueba3(blocks);
-
+        AES aes = new AES();
+        String encryption = aes.encryptText(blocks);
+        System.out.println(encryption);
+        Byte[] bytes2 = Util.getInstance().plaintextToAscii(encryption);
+        Block[] blocks2 = Block.getBlocks(bytes2);
+        String decryption = aes.decryptText(blocks2);
+        System.out.println(decryption);
 
 
     }
@@ -47,7 +51,7 @@ public class Main {
         System.out.println(encryption);
         Block decryption = aes.decrypt(encryption);
         System.out.println("Decryption");
-        System.out.println(decryption);
+        System.out.println(decryption.getText());
 
     }
 

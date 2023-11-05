@@ -72,6 +72,7 @@ public class AES {
         }
         return new Byte(SBox[rightNum][leftNum]);
     }
+
     public Byte inversedByteSubstitution(Byte number) {
         boolean[] left = new boolean[4];
         boolean[] right = new boolean[4];
@@ -99,6 +100,9 @@ public class AES {
             bytes[i] = byteSubstitution(bytes[i]);
         }
         return new Block(bytes);
+    }
+    public static void setKey(Byte[][] newkey){
+        key = newkey;
     }
     public Block inverseBlockSubstitution(Block block) {
         Byte[] bytes = block.getBytes();
@@ -155,31 +159,54 @@ public class AES {
         }
         return new Block(result);
     }
-    public Block Round(Block block){
-        Block substitution=blockSubstitution(block);
-        Block shift=substitution.shiftRow();
-        Block mix=mixColumn(shift);
-        Block round=addRoundKey(mix);
+
+    public Block Round(Block block) {
+        Block substitution = blockSubstitution(block);
+        Block shift = substitution.shiftRow();
+        Block mix = mixColumn(shift);
+        Block round = addRoundKey(mix);
         return round;
     }
-    public Block InversedRound(Block block){
-        Block round=addRoundKey(block);
-        Block inverseMix=inverseMixColumn(round);
-        Block inverseShift=inverseMix.inverseShiftRow();
-        Block inverseSubstitution=inverseBlockSubstitution(inverseShift);
+
+    public Block InversedRound(Block block) {
+        Block round = addRoundKey(block);
+        Block inverseMix = inverseMixColumn(round);
+        Block inverseShift = inverseMix.inverseShiftRow();
+        Block inverseSubstitution = inverseBlockSubstitution(inverseShift);
         return inverseSubstitution;
     }
-    public Block encrypt(Block block){
+
+    public Block encrypt(Block block) {
         for (int i = 0; i < 10; i++) {
-            block=Round(block);
+            block = Round(block);
         }
         return block;
     }
-    public Block decrypt(Block block){
+
+    public Block decrypt(Block block) {
         for (int i = 0; i < 10; i++) {
-            block=InversedRound(block);
+            block = InversedRound(block);
         }
         return block;
+    }
+
+    public String encryptText(Block[] blocks) {
+        String str = "";
+        for (Block block : blocks) {
+            block=Round(block);
+            str+=block.getText();
+
+        }
+        return str;
+    }
+    public String decryptText(Block[] blocks) {
+        String str = "";
+        for (Block block : blocks) {
+            block=InversedRound(block);
+            str+=block.getText();
+
+        }
+        return str;
     }
 }
 

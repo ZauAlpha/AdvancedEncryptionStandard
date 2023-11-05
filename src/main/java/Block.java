@@ -65,6 +65,16 @@ public class Block {
         return new Block(shiftedBytes);
     }
     //A method that returns a column of the block
+    public String getText() {
+        String text = "";
+        for (int i = 0; i < 4; i++) {
+            text += bytes[i][0].getChar();
+            text += bytes[i][1].getChar();
+            text += bytes[i][2].getChar();
+            text += bytes[i][3].getChar();
+        }
+        return text;
+    }
 
 
 
